@@ -1,0 +1,38 @@
+:root {
+    --red: hsl(14, 86%, 42%);
+    --green: hsl(159, 69%, 38%);
+
+    --rose-50: hsl(20, 50%, 98%);
+    --rose-100: hsl(13, 31%, 94%);
+    --rose-300: hsl(14, 25%, 72%);
+    --rose-400: hsl(7, 20%, 60%);
+    --rose-500: hsl(12, 20%, 44%);
+    --rose-900: hsl(14, 65%, 9%);
+
+}
+
+@font-face {
+    font-family: 'Red Hat Display';
+    src: url(./fonts/Red_Hat_Display/RedHatDisplay-VariableFont_wght.ttf);
+}
+
+body {
+    background-color: var(--rose-300);
+    margin: 0;
+}
+
+main {
+    display: grid;
+    box-sizing: border-box;
+    padding: 50px;
+    position: relative;
+}
+
+div[class="attribution"] {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    color: black;
+}
