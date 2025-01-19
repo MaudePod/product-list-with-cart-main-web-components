@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Frontend Mentor |  Product list with cart">
+
   <!-- displays site properly based on user's device -->
 
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
@@ -22,7 +24,7 @@
     }
   </style>
   <link rel="stylesheet" href="style.css">
-  <script src="main.js" defer></script>
+  <script type="module" src="main.js" defer></script>
 </head>
 
 <body>
@@ -33,20 +35,13 @@
     <products-component>
       <template shadowrootmode="open">
         <section class="products">
-      <slot></slot>
-  
-    </section>
-    <style>
-      section[class="products"] {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    max-width: 100svw;
-    gap: 50px;
-}
+          <p>Please enable Javacript</p>
+        </section>
+      </template>
+    </products-component>
+  <cart-details></cart-details>
 
-    </style>
-    </template>
-  </products-component>
+ 
   </main>
   <div class="attribution">
     Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>.
@@ -55,7 +50,7 @@
 </body>
 
 </html>
-<svg>
+<svg id="svgs">
   <symbol id="icon-add-to-cart" fill="" viewBox="0 0 21 20">
     <g fill="#C73B0F" clip-path="url(#a)">
       <path
