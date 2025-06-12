@@ -91,7 +91,7 @@ export default class CartItemComponent extends HTMLElement {
         this.#internals.shadowRoot.querySelector('span[class="cart-item-subtotal-price"]').innerHTML = this.getAttribute('cart-item-subtotal-price');
       }
       this.#internals.shadowRoot.querySelector('button[id="remove-item"]').addEventListener('click',(event)=>{
-        localStorage.removeItem(this.getAttribute('cart-item-name'));
+        sessionStorage.removeItem(this.getAttribute('cart-item-name'));
         window.dispatchEvent(new StorageEvent('storage', {}));
       });
 
@@ -102,7 +102,7 @@ export default class CartItemComponent extends HTMLElement {
    
     static get observedAttributes() {
         return [
-          'cart-item-name"',
+          'cart-item-name',
           'cart-item-amount',
           'cart-item-unit-price',
           'cart-item-subtotal-price'

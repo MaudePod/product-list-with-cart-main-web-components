@@ -101,20 +101,20 @@ template.innerHTML = `
               grid-auto-flow: column;
             }
 
-            section[class="quantity"],
-            label[for="add-to-cart"] {
-              padding: 5px 15px;
-              border-radius: 30px;
-              width: 100px;
-              height: 30px;
-              border: 1px solid var(--rose-500);
-              position: absolute;
-              left: 75px;
-              bottom: -15px;
-              cursor: pointer;
-              border-width: thin;
-              user-select: none;
-              -webkit-user-select: none;
+            section[class="quantity"], label[for="add-to-cart"] {
+                padding: 5px 15px;
+                border-radius: 30px;
+                width: 100px;
+                height: 30px;
+                border: 1px solid var(--rose-500);
+                position: absolute;
+                left: 75px;
+                bottom: -15px;
+                cursor: pointer;
+                border-width: thin;
+                user-select: none;
+                -webkit-user-select: none;
+                padding-right: 28px;
             }
             section[class="quantity"]{
               border-color:transparent;
@@ -171,104 +171,105 @@ template.innerHTML = `
 
 `
 export default class ProductCard extends HTMLElement {
-    #internals;
-    #thumbnail;
-    constructor() {
+  #internals;
+  #thumbnail;
+  constructor() {
 
-        super();
-        this.#internals = this.attachInternals();
+    super();
+    this.#internals = this.attachInternals();
 
+  }
+  connectedCallback(
+  ) {
+    const shadowRoot = this.attachShadow({ mode: "open" })
+    shadowRoot.appendChild(template.content.cloneNode(true))
+    if (this.hasAttribute('img')) {
+      this.#internals.shadowRoot.querySelector('section[class="image"] img').src = this.getAttribute('img');
     }
-    connectedCallback(
-    ) {
-        const shadowRoot = this.attachShadow({ mode: "open" })
-        shadowRoot.appendChild(template.content.cloneNode(true))
-        if (this.hasAttribute('img')) {
-            this.#internals.shadowRoot.querySelector('section[class="image"] img').src = this.getAttribute('img');
-        }
-        if (this.hasAttribute('name')) {
-            this.#internals.shadowRoot.querySelector('span[class="name"]').innerHTML = this.getAttribute('name');
-        }
-        if (this.hasAttribute('category')) {
-            this.#internals.shadowRoot.querySelector('span[class="category"]').innerHTML = this.getAttribute('category');
-        }
-        if (this.hasAttribute('thumbnail')) {
-          this.#thumbnail= this.getAttribute('thumbnail');
-        }
-        if (this.hasAttribute('price')) {
-            this.#internals.shadowRoot.querySelector('span[class="price"]').innerHTML = this.getAttribute('price');
-        }
-        this.#internals.shadowRoot.querySelector('button[class="increment-quantity"]').addEventListener('click', (event) => {
-            this.onIncrementQuantityButtonClicked(this.updateQtyDisplay);
-        })
-        this.#internals.shadowRoot.querySelector('button[class="decrement-quantity"]').addEventListener('click', (event) => {
-            this.onDecrementQuantityButtonClicked(this.updateQtyDisplay);
-        })
-        this.#internals.shadowRoot.querySelector('input[name="add-to-cart"]').addEventListener('click', (event) => {
-            this.onItemAddedToCart();
-        })
-
+    if (this.hasAttribute('name')) {
+      this.#internals.shadowRoot.querySelector('span[class="name"]').innerHTML = this.getAttribute('name');
     }
-    onIncrementQuantityButtonClicked = (updateQtyDisplay) => {
-        const itemName = this.getAttribute('name');
+    if (this.hasAttribute('category')) {
+      this.#internals.shadowRoot.querySelector('span[class="category"]').innerHTML = this.getAttribute('category');
+    }
+    if (this.hasAttribute('thumbnail')) {
+      this.#thumbnail = this.getAttribute('thumbnail');
+    }
+    if (this.hasAttribute('price')) {
+      this.#internals.shadowRoot.querySelector('span[class="price"]').innerHTML = this.getAttribute('price');
+    }
+    this.#internals.shadowRoot.querySelector('button[class="increment-quantity"]').addEventListener('click', (event) => {
+      this.onIncrementQuantityButtonClicked(this.updateQtyDisplay);
+    })
+    this.#internals.shadowRoot.querySelector('button[class="decrement-quantity"]').addEventListener('click', (event) => {
+      this.onDecrementQuantityButtonClicked(this.updateQtyDisplay);
+    })
+    this.#internals.shadowRoot.querySelector('input[name="add-to-cart"]').addEventListener('click', (event) => {
+      this.onItemAddedToCart();
+    })
+
+  }
+  
+  onIncrementQuantityButtonClicked = (updateQtyDisplay) => {
+    const itemName = this.getAttribute('name');
+    const price = this.getAttribute('price').replace("$", "");
+    if (sessionStorage.getItem(itemName)) {
+      let val = JSON.parse(sessionStorage.getItem(itemName));
+      const updatedTotal = Number(val[itemName].qty) + 1;
+      sessionStorage.setItem(itemName, `{"${itemName}":{"qty":"${updatedTotal}","price":"${price}","thumbnail":"${this.#thumbnail}"}}`);
+      updateQtyDisplay(updatedTotal);
+    }
+  }
+  onDecrementQuantityButtonClicked = (updateQtyDisplay) => {
+    const itemName = this.getAttribute('name');
+    const price = this.getAttribute('price').replace("$", "");
+    if (sessionStorage.getItem(itemName)) {
+      let val = JSON.parse(sessionStorage.getItem(itemName));
+      const updatedTotal = Number(val[itemName].qty) - 1;
+      sessionStorage.setItem(itemName, `{"${itemName}":{"qty":"${updatedTotal}","price":"${price}","thumbnail":"${this.#thumbnail}"}}`);
+      if (updatedTotal == 0) {
+        sessionStorage.removeItem(itemName);
+        this.#internals.shadowRoot.querySelector('button[class="decrement-quantity"]').disabled = true;
+        this.#internals.shadowRoot.querySelector('input[name="add-to-cart"]').checked = false;
+      }
+      updateQtyDisplay(updatedTotal);
+    }
+
+  }
+  onItemAddedToCart = () => {
+    const itemName = this.getAttribute('name');
+    const addToCartCheckBox = this.#internals.shadowRoot.querySelector('input[name="add-to-cart"]');
+    this.#internals.shadowRoot.querySelector('button[class="decrement-quantity"]').disabled = false;
+
+    if (sessionStorage.getItem(itemName)) {
+      const val = JSON.parse(sessionStorage.getItem(itemName));
+      const updatedTotal = Number(val[itemName].qty);
+      this.updateQtyDisplay(updatedTotal);
+
+    } else {
+      if (addToCartCheckBox.checked) {
         const price = this.getAttribute('price').replace("$", "");
-        if (localStorage.getItem(itemName)) {
-            let val = JSON.parse(localStorage.getItem(itemName));
-            const updatedTotal = Number(val[itemName].qty) + 1;
-            localStorage.setItem(itemName, `{"${itemName}":{"qty":"${updatedTotal}","price":"${price}","thumbnail":"${this.#thumbnail}"}}`);
-            updateQtyDisplay(updatedTotal);
-        }
+        sessionStorage.setItem(itemName, `{"${itemName}":{"qty":"1","price":"${price}","thumbnail":"${this.#thumbnail}"}}`);
+        this.updateQtyDisplay(1);
+        window.dispatchEvent(new StorageEvent('storage', {}));
+      }
     }
-    onDecrementQuantityButtonClicked = (updateQtyDisplay) => {
-        const itemName = this.getAttribute('name');
-        const price = this.getAttribute('price').replace("$", "");
-        if (localStorage.getItem(itemName)) {
-            let val = JSON.parse(localStorage.getItem(itemName));
-            const updatedTotal = Number(val[itemName].qty) - 1;
-            localStorage.setItem(itemName, `{"${itemName}":{"qty":"${updatedTotal}","price":"${price}","thumbnail":"${this.#thumbnail}"}}`);
-            if (updatedTotal == 0) {
-                localStorage.removeItem(itemName);
-        this.#internals.shadowRoot.querySelector('button[class="decrement-quantity"]').disabled=true;
-                this.#internals.shadowRoot.querySelector('input[name="add-to-cart"]').checked = false;
-            }
-            updateQtyDisplay(updatedTotal);
-        }
-
-    }
-    onItemAddedToCart = () => {
-        const itemName = this.getAttribute('name');
-        const addToCartCheckBox = this.#internals.shadowRoot.querySelector('input[name="add-to-cart"]');
-        this.#internals.shadowRoot.querySelector('button[class="decrement-quantity"]').disabled=false;
-
-        if (localStorage.getItem(itemName)) {
-            const val = JSON.parse(localStorage.getItem(itemName));
-            const updatedTotal = Number(val[itemName].qty);
-            this.updateQtyDisplay(updatedTotal);
-
-        } else {
-            if (addToCartCheckBox.checked) {
-                const price = this.getAttribute('price').replace("$", "");
-                localStorage.setItem(itemName, `{"${itemName}":{"qty":"1","price":"${price}","thumbnail":"${this.#thumbnail}"}}`);
-                this.updateQtyDisplay(1);
-                window.dispatchEvent(new StorageEvent('storage', {}));
-            }
-        }
-    }
-    updateQtyDisplay = (updatedTotal,callback=window.dispatchEvent(new StorageEvent('storage', {}))) => {
-        this.#internals.shadowRoot.querySelector('span[class="qty"]').innerHTML = updatedTotal;
-    }
-    static get observedAttributes() {
-        return [
-            'img',
-            'name',
-            'category',
-            'thumbnail',
-            'price'
-        ];
-    }
+  }
+  updateQtyDisplay = (updatedTotal, callback = window.dispatchEvent(new StorageEvent('storage', {}))) => {
+    this.#internals.shadowRoot.querySelector('span[class="qty"]').innerHTML = updatedTotal;
+  }
+  static get observedAttributes() {
+    return [
+      'img',
+      'name',
+      'category',
+      'thumbnail',
+      'price'
+    ];
+  }
 
 }
 
 if (!customElements.get("product-card")) {
-    customElements.define("product-card", ProductCard);
+  customElements.define("product-card", ProductCard);
 } 

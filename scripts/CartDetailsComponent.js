@@ -205,7 +205,7 @@ export default class CartDetailsComponent extends HTMLElement {
         this.#internals.shadowRoot.querySelector('slot[name="ordered-items"]').innerHTML = this.getOrderedItems();
         this.#internals.shadowRoot.querySelector('span[class="summary-total"]').innerHTML = this.getOrderTotal();
         this.#internals.shadowRoot.querySelector('button[id="start-new-order"]').addEventListener('click',(event)=>{
-            localStorage.clear();
+            sessionStorage.clear();
             window.dispatchEvent(new StorageEvent('storage', {}));
         });
         window.addEventListener('storage', (event) => {
@@ -225,8 +225,8 @@ export default class CartDetailsComponent extends HTMLElement {
     getCartItems = () => {
         let html = "";
 
-        Object.keys(localStorage).forEach(function (key) {
-            let item = JSON.parse(localStorage.getItem(key));
+        Object.keys(sessionStorage).forEach(function (key) {
+            let item = JSON.parse(sessionStorage.getItem(key));
             const amount = Number(item[key].qty);
             const unitPrice = Number(item[key].price);
             const subTotal = Number(item[key].qty) * Number(item[key].price);
@@ -246,8 +246,8 @@ export default class CartDetailsComponent extends HTMLElement {
     getOrderedItems = () => {
         let html = "";
 
-        Object.keys(localStorage).forEach(function (key) {
-            let item = JSON.parse(localStorage.getItem(key));
+        Object.keys(sessionStorage).forEach(function (key) {
+            let item = JSON.parse(sessionStorage.getItem(key));
             const amount = Number(item[key].qty);
             const unitPrice = Number(item[key].price);
             const total = Number(item[key].qty) * Number(item[key].price);
@@ -264,22 +264,21 @@ export default class CartDetailsComponent extends HTMLElement {
                     <hr>
             `
         });
-        console.log(html);
         return html;
     }
     getTotalNumberOfItemsInCart = () => {
         let totalNumberOfItems = 0;
-        Object.keys(localStorage).forEach(function (key) {
-            let item = JSON.parse(localStorage.getItem(key));
-            totalNumberOfItems += Number(item[key].qty);
+        Object.keys(sessionStorage).forEach(function (key) {
+            let item = JSON.parse(sessionStorage.getItem(key));
+            totalNumberOfItems += Number(item[key].qty) || 0;
         });
         return totalNumberOfItems;
     }
 
     getOrderTotal = () => {
         let orderTotal = 0;
-        Object.keys(localStorage).forEach(function (key) {
-            let item = JSON.parse(localStorage.getItem(key));
+        Object.keys(sessionStorage).forEach(function (key) {
+            let item = JSON.parse(sessionStorage.getItem(key));
             orderTotal += (Number(item[key].qty) * Number(item[key].price));
         });
         return orderTotal;
