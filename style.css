@@ -25,7 +25,7 @@ body {
     min-height: 100svh;
     width: 100svw;
     position: relative;
-    font-family: 'Red Hat Display';
+    font-family: 'Red Hat Display',sans-serif;
 }
 
 main {
